@@ -4,23 +4,24 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import {Test} from "./pages/test";
 import {MyTable} from "./pages/tables/myTable.tsx";
-import {Button, Tabs} from "antd";
+import {Button, Tabs, TabsProps} from "antd";
 
 function App() {
 	const [count, setCount] = useState(0)
 
-	return (
-		<>
-			<Tabs defaultActiveKey="3">
-				<Tabs.TabPane tab="Dashboard" key="1">
-					<div>
-						<a href="https://vite.dev" target="_blank">
-							<img src={viteLogo} className="logo" alt="Vite logo"/>
-						</a>
-						<a href="https://react.dev" target="_blank">
-							<img src={reactLogo} className="logo react" alt="React logo"/>
-						</a>
-					</div>
+	// Ant Design 5.x 推荐使用 items 属性替代 TabPane
+	const items: TabsProps['items'] = [
+		{
+			key: '1',
+			label: 'Dashboard',
+			children: (
+				<div>
+					<a href="https://vite.dev" target="_blank">
+						<img src={viteLogo} className="logo" alt="Vite logo"/>
+					</a>
+					<a href="https://react.dev" target="_blank">
+						<img src={reactLogo} className="logo react" alt="React logo"/>
+					</a>
 					<h1>Vite + React</h1>
 					<div className="card">
 						<p>
@@ -30,21 +31,33 @@ function App() {
 					<p className="read-the-docs">
 						Click on the Vite and React logos to learn more
 					</p>
-				</Tabs.TabPane>
+				</div>
+			),
+		},
+		{
+			key: '2',
+			label: 'Button',
+			children: (
+				<Button type="primary" onClick={() => setCount((count) => count + 1)}>
+					count is {count}
+				</Button>
+			),
+		},
+		{
+			key: '3',
+			label: 'Mytable',
+			children: <MyTable/>,
+		},
+		{
+			key: '4',
+			label: 'Test',
+			children: <Test/>,
+		},
+	];
 
-				<Tabs.TabPane tab="Button" key="2">
-					<Button type="primary" onClick={() => setCount((count) => count + 1)}>count is {count}</Button>
-				</Tabs.TabPane>
-
-				<Tabs.TabPane tab="Mytable" key="3">
-					<MyTable></MyTable>
-				</Tabs.TabPane>
-
-				<Tabs.TabPane tab="Test" key="4">
-					<Test/>
-				</Tabs.TabPane>
-
-			</Tabs>
+	return (
+		<>
+			<Tabs defaultActiveKey="3" items={items} />
 		</>
 	)
 }
