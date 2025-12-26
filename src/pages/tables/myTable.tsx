@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTable } from '../../hooks/useTable';
 import { TableForm } from '../../components/TableForm';
 import type { TableDataItem, CreateTableDataParams, UpdateTableDataParams } from '../../types/table';
+import './techEffects.css';
 
 export const MyTable = () => {
 	const { dataSource, loading, pagination, create, update, remove, batchRemove, setQueryParams } =
@@ -70,6 +71,7 @@ export const MyTable = () => {
 				dataIndex: 'id',
 				key: 'id',
 				width: 80,
+				render: (id: number) => <span className="tech-number">{id}</span>,
 			},
 			{
 				title: '姓名',
@@ -94,6 +96,15 @@ export const MyTable = () => {
 				// 排序
 				sortDirections: ['descend', 'ascend'],
 				sorter: (a, b) => a.name.length - b.name.length,
+				render: (name: string) => (
+					<span style={{ 
+						color: '#4dd0e1', 
+						fontWeight: 500,
+						textShadow: '0 0 4px rgba(0, 200, 255, 0.4)'
+					}}>
+						{name}
+					</span>
+				),
 			},
 			{
 				title: '年龄',
@@ -101,12 +112,25 @@ export const MyTable = () => {
 				key: 'age',
 				width: 100,
 				sorter: (a, b) => a.age - b.age,
+				render: (age: number) => (
+					<span className="tech-number" style={{ fontSize: '14px' }}>
+						{age}
+					</span>
+				),
 			},
 			{
 				title: '住址',
 				dataIndex: 'address',
 				key: 'address',
 				ellipsis: true,
+				render: (address: string) => (
+					<span style={{ 
+						color: '#b8d4e5',
+						textShadow: '0 0 2px rgba(184, 212, 229, 0.2)'
+					}}>
+						{address}
+					</span>
+				),
 			},
 			{
 				title: '标签',
@@ -120,7 +144,7 @@ export const MyTable = () => {
 								color = 'volcano';
 							}
 							return (
-								<Tag color={color} key={tag}>
+								<Tag color={color} key={tag} className="tech-tag">
 									{tag.toUpperCase()}
 								</Tag>
 							);
@@ -139,6 +163,7 @@ export const MyTable = () => {
 							type="link"
 							icon={<EditOutlined />}
 							onClick={() => handleEdit(record)}
+							className="tech-link-button"
 						>
 							编辑
 						</Button>
@@ -148,7 +173,7 @@ export const MyTable = () => {
 							okText="确定"
 							cancelText="取消"
 						>
-							<Button type="link" danger icon={<DeleteOutlined />}>
+							<Button type="link" danger icon={<DeleteOutlined />} className="tech-link-button tech-link-button-danger">
 								删除
 							</Button>
 						</Popconfirm>
@@ -172,62 +197,74 @@ export const MyTable = () => {
 	};
 
 	return (
-		<Card>
-			<Space direction="vertical" size="middle" style={{ width: '100%' }}>
-				{/* 操作栏 */}
-				<Space>
-					<Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-						新增
-					</Button>
-					<Popconfirm
-						title={`确定要删除选中的 ${selectedRowKeys.length} 条数据吗？`}
-						onConfirm={handleBatchDelete}
-						disabled={selectedRowKeys.length === 0}
-						okText="确定"
-						cancelText="取消"
-					>
-						<Button
-							danger
-							icon={<DeleteOutlined />}
-							disabled={selectedRowKeys.length === 0}
+		<Card className="tech-card-container" bodyStyle={{ padding: 0 }}>
+			<div className="tech-card-content" style={{ padding: '24px' }}>
+				<Space direction="vertical" size="middle" style={{ width: '100%' }}>
+					{/* 操作栏 */}
+					<Space>
+						<Button 
+							type="primary" 
+							icon={<PlusOutlined />} 
+							onClick={handleCreate}
+							className="tech-button"
 						>
-							批量删除 ({selectedRowKeys.length})
+							新增
 						</Button>
-					</Popconfirm>
+						<Popconfirm
+							title={`确定要删除选中的 ${selectedRowKeys.length} 条数据吗？`}
+							onConfirm={handleBatchDelete}
+							disabled={selectedRowKeys.length === 0}
+							okText="确定"
+							cancelText="取消"
+						>
+							<Button
+								danger
+								icon={<DeleteOutlined />}
+								disabled={selectedRowKeys.length === 0}
+								className="tech-button tech-button-danger"
+							>
+								批量删除 (<span className="tech-number">{selectedRowKeys.length}</span>)
+							</Button>
+						</Popconfirm>
+					</Space>
+
+					{/* 表格 */}
+					<div className="tech-table">
+						<Table<TableDataItem>
+							columns={columns}
+							dataSource={dataSource}
+							rowKey="id"
+							loading={loading}
+							rowSelection={rowSelection}
+							pagination={{
+								current: pagination.current,
+								pageSize: pagination.pageSize,
+								total: pagination.total,
+								showSizeChanger: true,
+								showQuickJumper: true,
+								showTotal: (total) => (
+									<span className="tech-number">共 {total} 条</span>
+								),
+								onChange: handleTableChange,
+								onShowSizeChange: handleTableChange,
+							}}
+							scroll={{ x: 1000 }}
+						/>
+					</div>
+
+					{/* 表单弹窗 */}
+					<TableForm
+						open={formVisible}
+						mode={formMode}
+						initialData={editingRecord}
+						onCancel={() => {
+							setFormVisible(false);
+							setEditingRecord(undefined);
+						}}
+						onSubmit={handleFormSubmit}
+					/>
 				</Space>
-
-				{/* 表格 */}
-				<Table<TableDataItem>
-					columns={columns}
-					dataSource={dataSource}
-					rowKey="id"
-					loading={loading}
-					rowSelection={rowSelection}
-					pagination={{
-						current: pagination.current,
-						pageSize: pagination.pageSize,
-						total: pagination.total,
-						showSizeChanger: true,
-						showQuickJumper: true,
-						showTotal: (total) => `共 ${total} 条`,
-						onChange: handleTableChange,
-						onShowSizeChange: handleTableChange,
-					}}
-					scroll={{ x: 1000 }}
-				/>
-
-				{/* 表单弹窗 */}
-				<TableForm
-					open={formVisible}
-					mode={formMode}
-					initialData={editingRecord}
-					onCancel={() => {
-						setFormVisible(false);
-						setEditingRecord(undefined);
-					}}
-					onSubmit={handleFormSubmit}
-				/>
-			</Space>
+			</div>
 		</Card>
 	);
 };

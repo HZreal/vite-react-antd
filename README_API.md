@@ -277,3 +277,4 @@ export const getUserList = () => request.get<User[]>('/user/list');
 export const createUser = (data: Partial<User>) => request.post('/user', data);
 ```
 
+
