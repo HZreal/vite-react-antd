@@ -128,3 +128,9 @@ export const TableForm = ({ open, mode, initialData, onCancel, onSubmit }: Table
 	);
 };
 
+function xxx(xxxx: number, bxxxx: number): number {
+	return a + b;
+}
+
+const aa=1
+xxx(aa, 2);
